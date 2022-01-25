@@ -1,3 +1,15 @@
+# Wails bin directory
+build/bin
+
+# IDEs
+.idea
+.vscode
+
+# The black hole that is...
+node_modules
+
+.DS_Store
+
 # Binaries for programs and plugins
 *.exe
 *.exe~
@@ -13,3 +25,5 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+build

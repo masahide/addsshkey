@@ -1,0 +1,9 @@
+{
+  "name": "addsshkey",
+  "outputfilename": "addsshkey",
+  "wailsjsdir": "./frontend",
+  "author": {
+    "name": "YAMASAKI Masahide",
+    "email": "masahide.y@gmail.com"
+  }
+}
