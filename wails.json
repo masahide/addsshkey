@@ -1,9 +1,20 @@
 {
   "name": "addsshkey",
+  "frontend:build": "npm run build",
+  "frontend:install": "npm install",
+  "frontend:dev": "",
   "outputfilename": "addsshkey",
   "wailsjsdir": "./frontend",
-  "author": {
+  "version": "2",
+  "Path": "",
+  "BuildDir": "",
+  "OutputType": "",
+  "Platform": "",
+  "Author": {
     "name": "YAMASAKI Masahide",
     "email": "masahide.y@gmail.com"
-  }
+  },
+  "debounceMS": 100,
+  "devserverurl": "http://localhost:34115",
+  "appargs": ""
 }
