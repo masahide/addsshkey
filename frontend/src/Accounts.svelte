@@ -10,8 +10,11 @@
         PrimaryText,
         SecondaryText,
     } from "@smui/list";
+    import Dialog, { Title, Content, Actions } from "@smui/dialog";
+    import Button, { Label } from "@smui/button";
     import Card from "@smui/card";
     import { v1 as v1uuid } from "uuid";
+    /*
     let accounts = [
         {
             id: "xxxxxxxxxx",
@@ -29,6 +32,7 @@
             password: "xxxxxxxxxxxxxxxxxxxxx",
         },
     ];
+     */
     let newAccountData = () => {
         return {
             id: null,
@@ -41,6 +45,7 @@
     let data = newAccountData();
     let isEdit = false;
     let newAccount = () => {
+        /*
         accounts = [
             ...accounts,
             {
@@ -50,7 +55,18 @@
                 secret: data.secret,
                 password: data.password,
             },
-        ];
+    ];*/
+        windows.go.main.App.AddAccount(
+            {
+                id: "",
+                url: data.address,
+                email: data.email,
+                account_key: data.secret,
+            },
+            pass
+        ).then((result) => {
+            greeting = result;
+        });
         openEditAccount = false;
         console.log("newAccount", accounts);
         data = newAccountData();
@@ -60,6 +76,8 @@
         console.log("deleteAccount ID:", id);
         accounts = accounts.filter((account) => account.id !== deleteAccountID);
     };
+    let openTwoFactor = false;
+    let twoFactorCode = "";
     let openDelete = false;
     let openSetting = false;
     let clicked = "Nothing yet.";
@@ -94,9 +112,23 @@
         true: updateAccount,
         false: newAccount,
     };
-    import Dialog, { Title, Content, Actions } from "@smui/dialog";
-    import Button, { Label } from "@smui/button";
+    let name = "";
+    let greeting = "";
+    let promise = window.go.main.App.GetOpAccounts();
+    function greet() {
+        window.go.main.App.Greet(name).then((result) => {
+            greeting = result;
+        });
+    }
 </script>
+
+<div id="input" data-wails-no-drag>
+    <input id="name" type="text" bind:value={name} />
+    <button class="button" on:click={greet}>Greetings</button>
+</div>
+{#if greeting}
+    <div id="result">{greeting}</div>
+{/if}
 
 <Dialog
     bind:open={openSetting}
@@ -108,33 +140,39 @@
     <Content id="simple-content">
         <Card padded>
             <List class="demo-list" twoLine avatarList singleSelection>
-                {#each accounts as account}
-                    <Item disabled={account.disabled} nonInteractive>
-                        <Text>
-                            <PrimaryText>{account.address}</PrimaryText>
-                            <SecondaryText>{account.email}</SecondaryText>
-                        </Text>
-                        <Meta>
-                            <Button
-                                on:click={() => {
-                                    isEdit = true;
-                                    data = account;
-                                    openEditAccount = true;
-                                }}
-                            >
-                                <Label>Edit</Label>
-                            </Button>
-                            <Button
-                                on:click={() => {
-                                    openDelete = true;
-                                    deleteAccountID = account.id;
-                                }}
-                            >
-                                <Label>Delete</Label>
-                            </Button>
-                        </Meta>
-                    </Item>
-                {/each}
+                {#await promise}
+                    <p>...waiting</p>
+                {:then info}
+                    {#each info as account}
+                        <Item nonInteractive>
+                            <Text>
+                                <PrimaryText>{account.url}</PrimaryText>
+                                <SecondaryText>{account.email}</SecondaryText>
+                            </Text>
+                            <Meta>
+                                <Button
+                                    on:click={() => {
+                                        isEdit = true;
+                                        data = account;
+                                        openEditAccount = true;
+                                    }}
+                                >
+                                    <Label>Edit</Label>
+                                </Button>
+                                <Button
+                                    on:click={() => {
+                                        openDelete = true;
+                                        deleteAccountID = account.id;
+                                    }}
+                                >
+                                    <Label>Delete</Label>
+                                </Button>
+                            </Meta>
+                        </Item>
+                    {/each}
+                {:catch error}
+                    <p style="color: red">{error}</p>
+                {/await}
             </List>
         </Card>
         <Button
@@ -226,6 +264,33 @@
         </Button>
         <Button action="yes">
             <Label>Yes</Label>
+        </Button>
+    </Actions>
+</Dialog>
+<Dialog
+    bind:open={openTwoFactor}
+    aria-labelledby="twofactor-title"
+    aria-describedby="twofactor-content"
+    on:SMUIDialog:closed={(e) => {
+        e.detail.action === "yes" && deleteAccount();
+    }}
+>
+    <!-- Title cannot contain leading whitespace due to mdc-typography-baseline-top() -->
+    <Title id="twofactor-title">twofactor Auth</Title>
+    <Content id="twofactor-content"
+        >Enter the code for two-factor authentication>
+        <Textfield
+            bind:value={twoFactorCode}
+            label="Code"
+            style="min-width: 350px;"
+        >
+            <Icon class="material-icons" slot="leadingIcon">password</Icon>
+            <HelperText slot="helper">6 digit number</HelperText>
+        </Textfield>
+    </Content>
+    <Actions>
+        <Button action="Apply">
+            <Label>Apply</Label>
         </Button>
     </Actions>
 </Dialog>

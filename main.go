@@ -15,16 +15,19 @@ import (
 //go:embed frontend/dist
 var assets embed.FS
 
+const appName = "addsshkey"
+
 //go:embed build/appicon.png
 var icon []byte
 
 func main() {
 	// Create an instance of the app structure
-	app := NewApp()
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+	app := NewApp(appName)
 
 	// Create application with options
 	err := wails.Run(&options.App{
-		Title:             "addsshkey",
+		Title:             appName,
 		Width:             720,
 		Height:            570,
 		MinWidth:          720,

@@ -1,8 +1,12 @@
-module changeme
+module github.com/masahide/addsshkey
 
 go 1.17
 
-require github.com/wailsapp/wails/v2 v2.0.0-beta.27
+require (
+	github.com/keybase/go-keychain v0.0.0-20211119201326-e02f34051621
+	github.com/lox/go-touchid v0.0.0-20170712105233-619cc8e578d0
+	github.com/wailsapp/wails/v2 v2.0.0-beta.27
+)
 
 require (
 	github.com/andybalholm/brotli v1.0.2 // indirect
